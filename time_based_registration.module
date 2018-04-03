@@ -1,0 +1,77 @@
+<?php
+/**
+ * @file
+ * Time based registration module file.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function time_based_registration_help($section) {
+  $output = '';
+  switch ($section) {
+    case 'admin/help#time_based_registration':
+      $output = '<p>' . t('This module helps admin to set up user registration based on timing.') . '</p>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Using module configuration admin can open user registration between mentioned time.') . '</li>';
+      $output .= '</ul>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function time_based_registration_menu() {
+  $items = array();
+  $items['admin/config/people/time-based-registration'] = array(
+    'title' => 'Time Based Registration',
+    'description' => 'allowing admin to configure the registration form',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('time_based_registration_settings_form'),
+    'access arguments' => array('administer time based registration'),
+    'file' => 'time_based_registration.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function time_based_registration_permission() {
+  return array(
+    'administer time based registration' => array(
+      'title' => t('Administer time based registration'),
+      'description' => t('Perform administration tasks for time based registration module.'),
+    ),
+  );
+}
+
+/**
+ * Implements  hook_form_FORM_ID_alter().
+ */
+function time_based_registration_form_user_register_form_alter(&$form, &$form_state, $form_id) {
+
+  $time_based_current = time();
+  // @FIXME
+  // Could not extract the default value because it is either indeterminate, or
+  // not scalar. You'll need to provide a default value in
+  // config/install/time_based_registration.settings.yml and config/schema/time_based_registration.schema.yml.
+  $tbr_config = \Drupal::config('time_based_registration.settings')->get('time_based_registration_config');
+  $time_based_from = strtotime($tbr_config['from']);
+  $time_based_to = strtotime($tbr_config['to']);
+  /*access false for user registration form with warning message.*/
+  if (!empty(is_array($time_based_from)) && !empty(is_array($time_based_to))) {
+    if (($time_based_from <= $time_based_current) && ($time_based_current <= $time_based_to)) {
+      $form['#access'] = TRUE;
+    }
+    else {
+      $form['#access'] = FALSE;
+      drupal_set_message(t('User registration Allowed between  @tbr_from - @tbr_to', array(
+        '@tbr_from' => $tbr_config['from'],
+        '@tbr_to' => $tbr_config['to'],
+      )), 'warning');
+    }
+  }
+}

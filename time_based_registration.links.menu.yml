@@ -1,0 +1,5 @@
+time_based_registration.settings_form:
+  route_name: time_based_registration.settings_form
+  title: 'Time Based Registration'
+  description: 'allowing admin to configure the registration form'
+  parent: user.admin_index

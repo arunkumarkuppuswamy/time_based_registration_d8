@@ -1,0 +1,7 @@
+name: 'Time  Based Registration'
+description: 'Allows admin to restrict user registration page for the specific period.'
+core: 8.x
+package: Other
+dependencies:
+  - date_api
+type: module

@@ -1,0 +1,7 @@
+time_based_registration.settings_form:
+  path: /admin/config/people/time-based-registration
+  defaults:
+    _title: 'Time Based Registration'
+    _form: \Drupal\time_based_registration\Form\TimeBasedRegistrationSettingsForm
+  requirements:
+    _permission: 'administer time based registration'
